@@ -28,7 +28,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         out.reconfigure(errors="replace")
     try:
         code: int = args.handler(args, out)
-    except (QRISError, ValueError, TypeError, ImportError) as exc:
+    except (QRISError, ValueError, TypeError, ImportError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_USAGE
     return code
@@ -91,6 +91,25 @@ def _image(args: argparse.Namespace, out: TextIO) -> int:
 
 def _anonymize(args: argparse.Namespace, out: TextIO) -> int:
     print(anonymize(_read(args.payload), seed=args.seed).dumps(), file=out)
+    return EXIT_OK
+
+
+def _scan(args: argparse.Namespace, out: TextIO) -> int:
+    from .scanner import scan_all, select_qris
+
+    image = sys.stdin.buffer.read() if args.image == "-" else args.image
+    results = scan_all(image)
+    if not args.all:
+        print(select_qris(results).text, file=out)
+    elif args.json:
+        rows = [
+            {"text": r.text, "is_qris": r.is_qris, "position": [list(p) for p in r.position]}
+            for r in results
+        ]
+        print(json.dumps(rows, indent=2, ensure_ascii=False), file=out)
+    else:
+        for result in results:
+            print(result.text, file=out)
     return EXIT_OK
 
 
@@ -168,6 +187,12 @@ def _parser() -> argparse.ArgumentParser:
     image.add_argument("-o", "--output", required=True, help="file ending in .png or .svg")
     image.add_argument("--scale", type=int, default=10, help="pixels per module (default 10)")
     image.set_defaults(handler=_image)
+
+    scan = commands.add_parser("scan", help='print the QRIS in an image (needs "qriskit[scan]")')
+    scan.add_argument("image", help="image file (PNG, JPEG, WEBP, ...), or - to read it from stdin")
+    scan.add_argument("--all", action="store_true", help="print every QR code, QRIS or not")
+    scan.add_argument("--json", action="store_true", help="with --all: print JSON with positions")
+    scan.set_defaults(handler=_scan)
 
     anon = commands.add_parser("anonymize", help="replace merchant data for safe sharing")
     anon.add_argument("payload", help=help_payload)

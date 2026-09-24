@@ -137,3 +137,45 @@ def test_non_ascii_name_on_non_utf8_stdout() -> None:
     )
     assert result.returncode == 0
     assert b"Merchant" in result.stdout
+
+
+def _qr_png(text: str) -> bytes:
+    segno = pytest.importorskip("segno")
+    pytest.importorskip("zxingcpp")
+    buffer = io.BytesIO()
+    segno.make_qr(text, error="m").save(buffer, kind="png", scale=8, border=4)
+    return buffer.getvalue()
+
+
+def test_scan(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    image = tmp_path / "qriskit.png"
+    image.write_bytes(_qr_png(STATIC))
+    code, out, _ = run(capsys, "scan", str(image))
+    assert code == 0 and out.strip() == STATIC
+
+
+def test_scan_from_stdin(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(sys, "stdin", io.TextIOWrapper(io.BytesIO(_qr_png(STATIC))))
+    code, out, _ = run(capsys, "scan", "-")
+    assert code == 0 and out.strip() == STATIC
+
+
+def test_scan_all(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    image = tmp_path / "url.png"
+    image.write_bytes(_qr_png("https://example.com"))
+    code, out, _ = run(capsys, "scan", str(image), "--all")
+    assert code == 0 and out.strip() == "https://example.com"
+    code, out, _ = run(capsys, "scan", str(image), "--all", "--json")
+    rows = json.loads(out)
+    assert rows[0]["is_qris"] is False and len(rows[0]["position"]) == 4
+
+
+def test_scan_errors_exit_2(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
+    image = tmp_path / "url.png"
+    image.write_bytes(_qr_png("https://example.com"))
+    code, _, err = run(capsys, "scan", str(image))
+    assert code == 2 and "none is a QRIS" in err
+    code, _, err = run(capsys, "scan", str(tmp_path / "missing.png"))
+    assert code == 2 and err.startswith("error:")
