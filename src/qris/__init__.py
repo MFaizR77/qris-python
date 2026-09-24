@@ -9,6 +9,7 @@ __version__ = "0.1.0"
 
 from . import acquirers
 from .acquirers import Acquirer
+from .anonymize import anonymize
 from .convert import build
 from .errors import Issue, QRISError, QRISParseError, QRISValidationError, QRISWarning
 from .model import QRIS, AdditionalData, MerchantAccount, Tip
@@ -29,6 +30,7 @@ __all__ = [
     "Tip",
     "__version__",
     "acquirers",
+    "anonymize",
     "build",
     "is_valid",
     "parse",
