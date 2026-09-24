@@ -1,6 +1,6 @@
 """Render a QRIS payload as a QR code image. Needs the optional ``segno`` package.
 
-Install it with ``pip install "qris[image]"``.
+Install it with ``pip install "qriskit[image]"``.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ def _segno() -> Any:
     except ImportError as exc:
         raise ImportError(
             'Rendering images needs the optional "segno" package. '
-            'Install it with: pip install "qris[image]"'
+            'Install it with: pip install "qriskit[image]"'
         ) from exc
     return segno
 

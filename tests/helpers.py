@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from qris import tlv
-from qris.crc import crc16
+from qriskit import tlv
+from qriskit.crc import crc16
 
 GOPAY_ACCOUNT = "0014COM.GO-JEK.WWW011993600914123456789010210G1234567890303UMI"
 NATIONAL_ACCOUNT = "0014ID.CO.QRIS.WWW0215ID10200123456780303UMI"

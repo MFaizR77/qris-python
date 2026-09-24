@@ -26,7 +26,7 @@ class Acquirer:
 
 @cache
 def _table() -> dict[str, Acquirer]:
-    data = resources.files("qris").joinpath("data").joinpath("nns.json")
+    data = resources.files("qriskit").joinpath("data").joinpath("nns.json")
     entries = json.loads(data.read_text(encoding="utf-8"))["entries"]
     return {
         e["nns"]: Acquirer(e["nns"], e["name"], e["organization"], e["product"]) for e in entries

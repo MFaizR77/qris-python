@@ -8,12 +8,12 @@ from typing import Any
 
 import pytest
 
-import qris
+import qriskit
 
 VECTORS = sorted((Path(__file__).parent / "vectors").glob("*.json"))
 
 
-def _actual(q: qris.QRIS, field: str) -> Any:
+def _actual(q: qriskit.QRIS, field: str) -> Any:
     tip = q.tip
     first = q.merchant_accounts[0] if q.merchant_accounts else None
     special = {
@@ -35,9 +35,9 @@ def test_vectors_exist() -> None:
 def test_vector(path: Path) -> None:
     vector = json.loads(path.read_text(encoding="utf-8"))
     assert vector["source"] in ("emvco-spec", "synthetic", "real-anonymized")
-    q = qris.parse(vector["payload"])
+    q = qriskit.parse(vector["payload"])
     for field, expected in vector["expect"].items():
         assert _actual(q, field) == expected, field
-    assert sorted(i.code for i in qris.validate(q)) == sorted(vector["issues"])
+    assert sorted(i.code for i in qriskit.validate(q)) == sorted(vector["issues"])
     if not any(code.startswith("crc.") for code in vector["issues"]):
         assert q.dumps() == vector["payload"]

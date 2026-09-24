@@ -5,8 +5,8 @@ from importlib import resources
 
 import pytest
 
-from qris import acquirers
-from qris.acquirers import Acquirer
+from qriskit import acquirers
+from qriskit.acquirers import Acquirer
 
 
 @pytest.mark.parametrize(
@@ -41,7 +41,7 @@ def test_all_acquirers() -> None:
 
 
 def test_data_file_is_clean() -> None:
-    raw = resources.files("qris").joinpath("data").joinpath("nns.json").read_text("utf-8")
+    raw = resources.files("qriskit").joinpath("data").joinpath("nns.json").read_text("utf-8")
     data = json.loads(raw)
     assert data["url"].startswith("https://bicara131.bi.go.id/")
     nns_codes = [entry["nns"] for entry in data["entries"]]

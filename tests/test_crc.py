@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from helpers import EMVCO_SAMPLE, STATIC
-from qris.crc import crc16
+from qriskit.crc import crc16
 
 
 def reference_crc16(data: bytes) -> int:

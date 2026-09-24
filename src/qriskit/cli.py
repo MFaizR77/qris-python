@@ -1,4 +1,4 @@
-"""Command line interface: ``qris <command> ...`` or ``python -m qris <command> ...``."""
+"""Command line interface: ``qriskit <command> ...`` or ``python -m qriskit <command> ...``."""
 
 from __future__ import annotations
 
@@ -95,7 +95,7 @@ def _anonymize(args: argparse.Namespace, out: TextIO) -> int:
 
 
 def format_summary(qris: QRIS) -> str:
-    """Human-readable table used by ``qris decode``."""
+    """Human-readable table used by ``qriskit decode``."""
     place = " ".join(p for p in (qris.merchant_city, qris.postal_code) if p)
     rows = [("Merchant", (qris.merchant_name or "-") + (f" ({place})" if place else ""))]
     rows.append(("NMID", qris.nmid or "-"))
@@ -133,9 +133,9 @@ def format_summary(qris: QRIS) -> str:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="qris", description="Inspect, validate and convert QRIS payloads."
+        prog="qriskit", description="Inspect, validate and convert QRIS payloads."
     )
-    parser.add_argument("--version", action="version", version=f"qris {__version__}")
+    parser.add_argument("--version", action="version", version=f"qriskit {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     help_payload = "QRIS payload text, or - to read it from stdin"
 
@@ -163,7 +163,7 @@ def _parser() -> argparse.ArgumentParser:
     static.add_argument("payload", help=help_payload)
     static.set_defaults(handler=_static)
 
-    image = commands.add_parser("image", help='save a PNG or SVG (needs "qris[image]")')
+    image = commands.add_parser("image", help='save a PNG or SVG (needs "qriskit[image]")')
     image.add_argument("payload", help=help_payload)
     image.add_argument("-o", "--output", required=True, help="file ending in .png or .svg")
     image.add_argument("--scale", type=int, default=10, help="pixels per module (default 10)")

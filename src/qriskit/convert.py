@@ -116,7 +116,7 @@ def to_dynamic(
     _require_intact_crc(qris)
     amount_text = format_amount(amount)
     if tip is not None and not isinstance(tip, Tip):
-        raise TypeError(f"tip must be a qris.Tip, not {type(tip).__name__}")
+        raise TypeError(f"tip must be a qriskit.Tip, not {type(tip).__name__}")
     if reference is not None and not (
         isinstance(reference, str) and 0 < len(reference) <= _MAX_REFERENCE
     ):

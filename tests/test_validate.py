@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-import qris
+import qriskit
 from helpers import STATIC, payload, static_pairs
-from qris import Issue, QRISValidationError
+from qriskit import Issue, QRISValidationError
 
 
 def _swapped() -> list[tuple[str, str]]:
@@ -15,16 +15,16 @@ def _swapped() -> list[tuple[str, str]]:
 
 
 def codes(text: str) -> list[str]:
-    return [issue.code for issue in qris.validate(text)]
+    return [issue.code for issue in qriskit.validate(text)]
 
 
 def test_valid_sample_has_no_issues() -> None:
-    assert qris.validate(STATIC) == []
-    assert qris.is_valid(STATIC)
+    assert qriskit.validate(STATIC) == []
+    assert qriskit.is_valid(STATIC)
 
 
 def test_validate_accepts_qris_objects() -> None:
-    assert qris.validate(qris.parse(STATIC)) == []
+    assert qriskit.validate(qriskit.parse(STATIC)) == []
 
 
 def test_issue_str() -> None:
@@ -79,9 +79,9 @@ def test_issue_str() -> None:
 def test_error_codes(pairs: list[tuple[str, str]], expected: str) -> None:
     text = payload(*pairs)
     assert expected in codes(text)
-    assert not qris.is_valid(text)
+    assert not qriskit.is_valid(text)
     with pytest.raises(QRISValidationError) as info:
-        qris.parse(text, strict=True)
+        qriskit.parse(text, strict=True)
     assert expected in [i.code for i in info.value.issues]
 
 
@@ -99,11 +99,11 @@ def test_error_codes(pairs: list[tuple[str, str]], expected: str) -> None:
 )
 def test_warning_codes(pairs: list[tuple[str, str]], expected: str) -> None:
     text = payload(*pairs)
-    issues = qris.validate(text)
+    issues = qriskit.validate(text)
     assert expected in [i.code for i in issues]
     assert all(i.severity == "warning" for i in issues)
-    assert qris.is_valid(text)
-    qris.parse(text, strict=True)
+    assert qriskit.is_valid(text)
+    qriskit.parse(text, strict=True)
 
 
 def test_crc_missing() -> None:
@@ -112,7 +112,7 @@ def test_crc_missing() -> None:
 
 
 def test_crc_mismatch_message_shows_expected_value() -> None:
-    issues = qris.validate(STATIC[:-4] + "0000")
+    issues = qriskit.validate(STATIC[:-4] + "0000")
     assert [i.code for i in issues] == ["crc.mismatch"]
     assert "expected 3ACC" in issues[0].message
 
@@ -125,7 +125,7 @@ def test_crc_not_hex() -> None:
 def test_crc_lowercase_is_a_warning() -> None:
     lower = STATIC[:-4] + STATIC[-4:].lower()  # 3ACC -> 3acc
     assert codes(lower) == ["crc.lowercase"]
-    assert qris.is_valid(lower)
+    assert qriskit.is_valid(lower)
 
 
 def test_crc_not_last() -> None:
@@ -134,15 +134,15 @@ def test_crc_not_last() -> None:
 
 
 def test_is_valid_never_raises() -> None:
-    assert not qris.is_valid("garbage")
-    assert not qris.is_valid("")
-    assert not qris.is_valid(None)  # type: ignore[arg-type]
+    assert not qriskit.is_valid("garbage")
+    assert not qriskit.is_valid("")
+    assert not qriskit.is_valid(None)  # type: ignore[arg-type]
 
 
 def test_strict_parse_passes_valid_payload() -> None:
-    assert qris.parse(STATIC, strict=True).merchant_name == "TOKO CONTOH"
+    assert qriskit.parse(STATIC, strict=True).merchant_name == "TOKO CONTOH"
 
 
 def test_validation_error_message_lists_errors() -> None:
     with pytest.raises(QRISValidationError, match=r"currency\.invalid"):
-        qris.parse(payload(*static_pairs(t53="156")), strict=True)
+        qriskit.parse(payload(*static_pairs(t53="156")), strict=True)

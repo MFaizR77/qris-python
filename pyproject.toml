@@ -3,14 +3,14 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "qris"
+name = "qriskit"
 dynamic = ["version"]
 description = "Parse, validate, build and convert QRIS (Indonesian QR payment) payloads. Zero dependencies."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
-authors = [{ name = "The qris contributors" }]
+authors = [{ name = "The qriskit contributors" }]
 keywords = ["qris", "qr code", "payment", "indonesia", "emvco", "qr payment"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -42,7 +42,7 @@ dev = [
 ]
 
 [project.scripts]
-qris = "qris.cli:main"
+qriskit = "qriskit.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/MFaizR77/qris-python"
@@ -50,10 +50,10 @@ Issues = "https://github.com/MFaizR77/qris-python/issues"
 Changelog = "https://github.com/MFaizR77/qris-python/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
-path = "src/qris/__init__.py"
+path = "src/qriskit/__init__.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/qris"]
+packages = ["src/qriskit"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -61,7 +61,7 @@ addopts = "--strict-markers"
 
 [tool.coverage.run]
 branch = true
-source = ["qris"]
+source = ["qriskit"]
 
 [tool.coverage.report]
 fail_under = 95

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from qris.errors import QRISParseError
-from qris.tlv import Node, decode, encode
+from qriskit.errors import QRISParseError
+from qriskit.tlv import Node, decode, encode
 
 
 def test_decode_simple() -> None:

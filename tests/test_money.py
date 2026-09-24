@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from qris._money import format_amount, format_percent, parse_decimal
+from qriskit._money import format_amount, format_percent, parse_decimal
 
 
 @pytest.mark.parametrize(

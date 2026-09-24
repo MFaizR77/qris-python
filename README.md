@@ -1,31 +1,31 @@
-# qris
+# qriskit
 
-[![PyPI](https://img.shields.io/pypi/v/qris)](https://pypi.org/project/qris/)
-[![Python](https://img.shields.io/pypi/pyversions/qris)](https://pypi.org/project/qris/)
+[![PyPI](https://img.shields.io/pypi/v/qriskit)](https://pypi.org/project/qriskit/)
+[![Python](https://img.shields.io/pypi/pyversions/qriskit)](https://pypi.org/project/qriskit/)
 [![CI](https://github.com/MFaizR77/qris-python/actions/workflows/ci.yml/badge.svg)](https://github.com/MFaizR77/qris-python/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Parse, validate, build and convert **QRIS** (Quick Response Code Indonesian Standard) payloads in Python.
 Zero dependencies, fully typed, Python 3.9+ on every OS.
 
-> **Unofficial.** This project is not affiliated with Bank Indonesia or ASPI.
+> **Unofficial.** This project is not affiliated with Bank Indonesia or ASPI. "QRIS" is a registered trademark of Bank Indonesia.
 
 ```python
-import qris
+import qriskit
 
-q = qris.parse(payload)                    # the text inside a QRIS sticker
-q.merchant_name, q.nmid                    # 'TOKO CONTOH', 'ID1020012345678'
-q.merchant_accounts[0].acquirer.name       # 'GoPay'
+q = qriskit.parse(payload)            # the text inside a QRIS sticker
+q.merchant_name, q.nmid               # 'TOKO CONTOH', 'ID1020012345678'
+q.merchant_accounts[0].acquirer.name  # 'GoPay'
 
 d = q.to_dynamic(25_000, reference="INV-2026-001")
-d.dumps()                                  # new payload, CRC recomputed
+d.dumps()  # new payload, CRC recomputed
 ```
 
 ## Install
 
 ```bash
-pip install qris              # core, no dependencies
-pip install "qris[image]"     # + PNG/SVG rendering (segno)
+pip install qriskit           # core, no dependencies
+pip install "qriskit[image]"  # + PNG/SVG rendering (segno)
 ```
 
 ## What it does
@@ -38,31 +38,31 @@ pip install "qris[image]"     # + PNG/SVG rendering (segno)
 - **Identify the acquirer** from the NNS code, using Bank Indonesia's public list.
 - **Render** PNG/SVG QR codes (optional extra).
 - **Anonymize** payloads so they can be shared in bug reports.
-- A small **CLI**: `qris decode | validate | dynamic | static | image | anonymize`.
+- A small **CLI**: `qriskit decode | validate | dynamic | static | image | anonymize`.
 
 ## Usage
 
 ### Read
 
 ```python
-q = qris.parse(payload)          # raises qris.QRISParseError only if the structure is broken
-q.point_of_initiation            # 'static' or 'dynamic'
-q.amount                         # Decimal('25000') or None
-q.tip                            # Tip(kind='fixed', value=Decimal('1000')) or None
+q = qriskit.parse(payload)  # raises qriskit.QRISParseError only if the structure is broken
+q.point_of_initiation       # 'static' or 'dynamic'
+q.amount                    # Decimal('25000') or None
+q.tip                       # Tip(kind='fixed', value=Decimal('1000')) or None
 q.additional_data.terminal_label # the TID printed on the sticker
-q.get("62.05")                   # raw value of any tag or sub-tag
-q.to_dict()                      # JSON-friendly summary
+q.get("62.05")  # raw value of any tag or sub-tag
+q.to_dict()     # JSON-friendly summary
 ```
 
 ### Validate
 
 ```python
-for issue in qris.validate(payload):
+for issue in qriskit.validate(payload):
     print(issue.severity, issue.code, issue.path, issue.message)
 # error crc.mismatch 63 CRC is 0000, expected 3ACC
 
-qris.is_valid(payload)           # True / False, never raises
-qris.parse(payload, strict=True) # raises qris.QRISValidationError on any error
+qriskit.is_valid(payload)  # True / False, never raises
+qriskit.parse(payload, strict=True) # raises qriskit.QRISValidationError on any error
 ```
 
 Errors mean the QRIS will probably fail to pay; warnings are deviations that usually still work.
@@ -77,7 +77,7 @@ Codes are part of the public API and will not change in minor releases.
 
 ```python
 from decimal import Decimal
-from qris import Tip
+from qriskit import Tip
 
 q.to_dynamic(25_000)
 q.to_dynamic("15000.50", tip=Tip.fixed(1_000))
@@ -95,9 +95,9 @@ Conversion refuses a source whose CRC is missing or wrong, so a corrupted payloa
 ### Build
 
 ```python
-from qris import MerchantAccount
+from qriskit import MerchantAccount
 
-q = qris.build(
+q = qriskit.build(
     merchant_name="TOKO CONTOH",
     merchant_city="JAKARTA",
     postal_code="10110",
@@ -115,22 +115,22 @@ q = qris.build(
 ### Images
 
 ```python
-from qris import image
+from qriskit import image
 
-image.save(q, "qris.png")        # or .svg
+image.save(q, "qriskit.png")  # or .svg
 png_bytes = image.to_png(q)
 ```
 
-ASPI requires QR codes of at least 115×115 px; smaller PNGs emit a `qris.QRISWarning`.
+ASPI requires QR codes of at least 115×115 px; smaller PNGs emit a `qriskit.QRISWarning`.
 
 ### Command line
 
 ```bash
-qris decode "0002010102..."
-qris validate - < payload.txt          # exit code 1 when there are errors
-qris dynamic "0002010102..." --amount 25000 --fee 1000 --reference INV-1
-qris image "0002010102..." -o qris.png
-qris anonymize "0002010102..."         # safe to paste into an issue
+qriskit decode "0002010102..."
+qriskit validate - < payload.txt  # exit code 1 when there are errors
+qriskit dynamic "0002010102..." --amount 25000 --fee 1000 --reference INV-1
+qriskit image "0002010102..." -o qriskit.png
+qriskit anonymize "0002010102..."  # safe to paste into an issue
 ```
 
 ## FAQ
@@ -152,7 +152,7 @@ A QRIS payload does not prove who owns it. Show the merchant name and NMID to pa
 Real-world payloads make this library better. Anonymize first, then open an issue or pull request with the result:
 
 ```bash
-qris anonymize "<your QRIS text>"
+qriskit anonymize "<your QRIS text>"
 ```
 
 This keeps the structure, NNS, GUIDs and amounts, and replaces names, cities, IDs and NMID.
@@ -161,7 +161,7 @@ Vectors live in `tests/vectors/*.json`; adding a file is enough, no code change 
 ## Development
 
 ```bash
-python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
+python -m venv .venv && . .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 pytest --cov
 ruff check src tests && ruff format --check src tests && mypy
@@ -169,4 +169,4 @@ ruff check src tests && ruff format --check src tests && mypy
 
 ## License
 
-MIT. Acquirer data comes from Bank Indonesia's public list (see `src/qris/data/nns.json`).
+MIT. Acquirer data comes from Bank Indonesia's public list (see `src/qriskit/data/nns.json`).

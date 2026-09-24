@@ -6,25 +6,25 @@ from decimal import Decimal
 
 import pytest
 
-import qris
+import qriskit
 from helpers import EMVCO_SAMPLE, STATIC, payload, static_pairs
-from qris import AdditionalData, MerchantAccount, Tip
-from qris.errors import QRISParseError
+from qriskit import AdditionalData, MerchantAccount, Tip
+from qriskit.errors import QRISParseError
 
 
 def test_roundtrip_is_exact() -> None:
-    assert qris.parse(STATIC).dumps() == STATIC
-    assert qris.parse(EMVCO_SAMPLE).dumps() == EMVCO_SAMPLE
+    assert qriskit.parse(STATIC).dumps() == STATIC
+    assert qriskit.parse(EMVCO_SAMPLE).dumps() == EMVCO_SAMPLE
 
 
 def test_str_and_repr() -> None:
-    q = qris.parse(STATIC)
+    q = qriskit.parse(STATIC)
     assert str(q) == STATIC
     assert repr(q) == f"QRIS({STATIC!r})"
 
 
 def test_fields_of_static_sample() -> None:
-    q = qris.parse(STATIC)
+    q = qriskit.parse(STATIC)
     assert q.version == "01"
     assert q.point_of_initiation == "static"
     assert q.is_static and not q.is_dynamic
@@ -42,7 +42,7 @@ def test_fields_of_static_sample() -> None:
 
 
 def test_merchant_accounts() -> None:
-    gopay, national = qris.parse(STATIC).merchant_accounts
+    gopay, national = qriskit.parse(STATIC).merchant_accounts
     assert gopay.tag == "26"
     assert gopay.guid == "COM.GO-JEK.WWW"
     assert gopay.pan == "9360091412345678901"
@@ -56,13 +56,13 @@ def test_merchant_accounts() -> None:
 
 
 def test_nns_needs_eight_digits() -> None:
-    assert MerchantAccount("26", (qris.Node("01", "9360"),)).nns is None
-    assert MerchantAccount("26", (qris.Node("01", "93600X14123"),)).nns is None
+    assert MerchantAccount("26", (qriskit.Node("01", "9360"),)).nns is None
+    assert MerchantAccount("26", (qriskit.Node("01", "93600X14123"),)).nns is None
     assert MerchantAccount("26").acquirer is None
 
 
 def test_get_paths() -> None:
-    q = qris.parse(STATIC)
+    q = qriskit.parse(STATIC)
     assert q.get("59") == "TOKO CONTOH"
     assert q.get("62.07") == "KASIR-01"
     assert q.get("26.00") == "COM.GO-JEK.WWW"
@@ -72,14 +72,14 @@ def test_get_paths() -> None:
 
 
 def test_malformed_template_does_not_break_properties() -> None:
-    q = qris.parse(payload(*static_pairs(t62="07XX")))
+    q = qriskit.parse(payload(*static_pairs(t62="07XX")))
     assert q.additional_data == AdditionalData()
     assert q.get("62.07") is None
     assert q.get("62") == "07XX"
 
 
 def test_missing_tags_are_none() -> None:
-    q = qris.parse(payload(("00", "01")))
+    q = qriskit.parse(payload(("00", "01")))
     assert q.point_of_initiation is None
     assert q.merchant_accounts == ()
     assert q.national is None and q.nmid is None
@@ -87,26 +87,28 @@ def test_missing_tags_are_none() -> None:
 
 
 def test_amount_and_tips() -> None:
-    q = qris.parse(payload(*static_pairs(t01="12"), ("54", "23.72"), ("55", "02"), ("56", "500")))
+    q = qriskit.parse(
+        payload(*static_pairs(t01="12"), ("54", "23.72"), ("55", "02"), ("56", "500"))
+    )
     assert q.amount == Decimal("23.72")
     assert q.tip == Tip("fixed", Decimal("500"))
-    q = qris.parse(payload(("55", "03"), ("57", "2.5")))
+    q = qriskit.parse(payload(("55", "03"), ("57", "2.5")))
     assert q.tip == Tip("percent", Decimal("2.5"))
-    assert qris.parse(payload(("55", "01"))).tip == Tip.prompt()
-    assert qris.parse(payload(("55", "02"))).tip is None
-    assert qris.parse(payload(("55", "03"), ("57", "150"))).tip is None
-    assert qris.parse(payload(("55", "09"))).tip is None
-    assert qris.parse(payload(("54", "abc"))).amount is None
+    assert qriskit.parse(payload(("55", "01"))).tip == Tip.prompt()
+    assert qriskit.parse(payload(("55", "02"))).tip is None
+    assert qriskit.parse(payload(("55", "03"), ("57", "150"))).tip is None
+    assert qriskit.parse(payload(("55", "09"))).tip is None
+    assert qriskit.parse(payload(("54", "abc"))).amount is None
 
 
 def test_immutable() -> None:
-    q = qris.parse(STATIC)
+    q = qriskit.parse(STATIC)
     with pytest.raises(dataclasses.FrozenInstanceError):
         q.nodes = ()  # type: ignore[misc]
 
 
 def test_to_dict_is_json_serialisable() -> None:
-    data = json.loads(json.dumps(qris.parse(STATIC).to_dict()))
+    data = json.loads(json.dumps(qriskit.parse(STATIC).to_dict()))
     assert data["merchant_name"] == "TOKO CONTOH"
     assert data["point_of_initiation"] == "static"
     assert data["amount"] is None and data["tip"] is None
@@ -121,7 +123,7 @@ def test_to_dict_is_json_serialisable() -> None:
 def test_additional_data_fields() -> None:
     subs = [f"{n:02d}" for n in range(1, 12)]
     value = "".join(f"{sub}02{sub}" for sub in subs) + "5002ZZ"
-    data = qris.parse(payload(("62", value))).additional_data
+    data = qriskit.parse(payload(("62", value))).additional_data
     assert data.bill_number == "01"
     assert data.mobile_number == "02"
     assert data.store_label == "03"
@@ -155,14 +157,14 @@ def test_merchant_account_create_validates_tag() -> None:
 
 
 def test_parse_strips_whitespace_and_bom() -> None:
-    assert qris.parse(chr(0xFEFF) + f"  {STATIC}\r\n").dumps() == STATIC
+    assert qriskit.parse(chr(0xFEFF) + f"  {STATIC}\r\n").dumps() == STATIC
 
 
 def test_parse_errors() -> None:
     with pytest.raises(QRISParseError, match="empty"):
-        qris.parse(" \n")
+        qriskit.parse(" \n")
     with pytest.raises(TypeError):
-        qris.parse(None)  # type: ignore[arg-type]
+        qriskit.parse(None)  # type: ignore[arg-type]
     with pytest.raises(QRISParseError) as info:
-        qris.parse("  0005012")
+        qriskit.parse("  0005012")
     assert info.value.position == 6

@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-import qris
+import qriskit
 from helpers import STATIC, payload, static_pairs
-from qris.cli import main
+from qriskit.cli import main
 
 
 def run(capsys: pytest.CaptureFixture[str], *argv: str) -> tuple[int, str, str]:
@@ -37,7 +37,7 @@ def test_decode_json(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_decode_shows_crc_mismatch_and_dynamic_fields(capsys: pytest.CaptureFixture[str]) -> None:
-    dynamic = qris.parse(STATIC).to_dynamic(25000, tip=qris.Tip.fixed(500), reference="INV-1")
+    dynamic = qriskit.parse(STATIC).to_dynamic(25000, tip=qriskit.Tip.fixed(500), reference="INV-1")
     _, out, _ = run(capsys, "decode", dynamic.dumps()[:-4] + "0000")
     assert "MISMATCH" in out
     assert "25000" in out and "fixed 500" in out and "INV-1" in out
@@ -64,12 +64,12 @@ def test_validate_json_and_warnings(capsys: pytest.CaptureFixture[str]) -> None:
 def test_dynamic_and_static(capsys: pytest.CaptureFixture[str]) -> None:
     code, out, _ = run(capsys, "dynamic", STATIC, "--amount", "25000", "--fee", "500")
     assert code == 0
-    dynamic = qris.parse(out.strip())
+    dynamic = qriskit.parse(out.strip())
     assert dynamic.amount == 25000 and dynamic.get("56") == "500"
     _, out, _ = run(capsys, "dynamic", STATIC, "--amount", "1000", "--fee-percent", "1.5")
-    assert qris.parse(out.strip()).get("57") == "1.50"
+    assert qriskit.parse(out.strip()).get("57") == "1.50"
     _, out, _ = run(capsys, "dynamic", STATIC, "--amount", "1000", "--tip", "--reference", "R1")
-    tipped = qris.parse(out.strip())
+    tipped = qriskit.parse(out.strip())
     assert tipped.get("55") == "01" and tipped.additional_data.reference_label == "R1"
     _, out, _ = run(capsys, "static", dynamic.dumps())
     assert out.strip() == STATIC
@@ -106,18 +106,18 @@ def test_image(capsys: pytest.CaptureFixture[str], tmp_path: Path) -> None:
 def test_anonymize(capsys: pytest.CaptureFixture[str]) -> None:
     code, out, _ = run(capsys, "anonymize", STATIC, "--seed", "3")
     assert code == 0
-    assert qris.parse(out.strip()).merchant_name != "TOKO CONTOH"
+    assert qriskit.parse(out.strip()).merchant_name != "TOKO CONTOH"
 
 
 def test_version(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit):
         main(["--version"])
-    assert qris.__version__ in capsys.readouterr().out
+    assert qriskit.__version__ in capsys.readouterr().out
 
 
 def test_python_dash_m() -> None:
     result = subprocess.run(
-        [sys.executable, "-m", "qris", "validate", STATIC],
+        [sys.executable, "-m", "qriskit", "validate", STATIC],
         capture_output=True,
         text=True,
         check=False,
@@ -130,7 +130,7 @@ def test_non_ascii_name_on_non_utf8_stdout() -> None:
     text = payload(*static_pairs(t59="咖啡店"))
     env = {**os.environ, "PYTHONIOENCODING": "cp1252"}
     result = subprocess.run(
-        [sys.executable, "-m", "qris", "decode", text],
+        [sys.executable, "-m", "qriskit", "decode", text],
         capture_output=True,
         env=env,
         check=False,

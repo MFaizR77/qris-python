@@ -84,7 +84,7 @@ class MerchantAccount:
         merchant_id: str | None = None,
         criteria: str | None = None,
     ) -> MerchantAccount:
-        """Build an account to pass to :func:`qris.build`."""
+        """Build an account to pass to :func:`qriskit.build`."""
         if not spec.is_merchant_account_template(tag):
             raise ValueError(f"Merchant account tag must be between 26 and 51, got {tag!r}")
         pairs = (("00", guid), ("01", pan), ("02", merchant_id), ("03", criteria))
@@ -416,7 +416,7 @@ class QRIS:
 
 
 def parse_payload(payload: str) -> QRIS:
-    """Read a payload without checking QRIS rules (see :func:`qris.parse`)."""
+    """Read a payload without checking QRIS rules (see :func:`qriskit.parse`)."""
     if not isinstance(payload, str):
         raise TypeError(f"payload must be str, not {type(payload).__name__}")
     text = payload.strip(_STRIP)

@@ -1,4 +1,4 @@
-"""Exceptions, warnings and validation issues used across :mod:`qris`."""
+"""Exceptions, warnings and validation issues used across :mod:`qriskit`."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ Severity = Literal["error", "warning"]
 
 @dataclass(frozen=True)
 class Issue:
-    """One problem reported by :func:`qris.validate`.
+    """One problem reported by :func:`qriskit.validate`.
 
     ``code`` is stable across minor versions, so callers can branch on it.
     """
