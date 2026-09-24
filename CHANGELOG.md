@@ -5,11 +5,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-## [0.2.0]
-
-### Changed
-
-- **Renamed the package from `qris` to `qriskit`**: `pip install qriskit`, `import qriskit`, and the `qriskit` command. "QRIS" is a registered trademark of Bank Indonesia; the new name makes clear that this is an unofficial toolkit. `qris` was never published to PyPI.
+## [0.2.0] - 2026-09-24
 
 ### Added
 
@@ -20,7 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 - Payloads containing characters that cannot be encoded as UTF-8 now raise `QRISParseError` instead of crashing `validate()` and `is_valid()`.
 
-## [0.1.0]
+## [0.1.0] - 2026-09-24
 
 ### Added
 
@@ -31,3 +27,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - `qriskit.anonymize` for sharing payloads safely.
 - Optional PNG/SVG rendering via `pip install "qriskit[image]"`.
 - `qriskit` command line tool.
+
+[Unreleased]: https://github.com/MFaizR77/qris-python/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/MFaizR77/qris-python/releases/tag/v0.2.0
