@@ -22,6 +22,10 @@ _MAX_REFERENCE = spec.ADDITIONAL_DATA_RULES[spec.SUB_REFERENCE].max_len
 def _node(tag: str, value: str) -> Node:
     if not isinstance(value, str):
         raise TypeError(f"Value for tag {tag} must be str, not {type(value).__name__}")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError(f"Value for tag {tag} cannot be encoded as UTF-8") from exc
     if len(value) > MAX_VALUE_LENGTH:
         raise ValueError(
             f"Value for tag {tag} is {len(value)} characters; the maximum is {MAX_VALUE_LENGTH}"

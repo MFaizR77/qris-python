@@ -78,3 +78,14 @@ def test_pan_and_merchant_id_are_separate() -> None:
     account = qriskit.parse(STATIC).merchant_accounts[0]
     assert account.pan == "9360091412345678901"
     assert account.merchant_id == "G123456789"
+
+
+def test_lone_surrogate_is_a_parse_error() -> None:
+    """Found by fuzzing: text that cannot be UTF-8 encoded crashed validate() and is_valid()."""
+    bad = STATIC[:70] + chr(0xD800) + STATIC[71:]
+    with pytest.raises(QRISParseError) as info:
+        qriskit.parse(bad)
+    assert info.value.position == 70
+    assert not qriskit.is_valid(bad)
+    with pytest.raises(ValueError, match="UTF-8"):
+        qriskit.parse(STATIC).with_tag("62.05", "A" + chr(0xDFFF))

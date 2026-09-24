@@ -423,4 +423,11 @@ def parse_payload(payload: str) -> QRIS:
     if not text:
         raise QRISParseError("Payload is empty")
     leading = len(payload) - len(payload.lstrip(_STRIP))
+    try:
+        text.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        # The CRC is computed over UTF-8 bytes, so such text can never be valid.
+        raise QRISParseError(
+            "Payload contains characters that cannot be encoded as UTF-8", leading + exc.start
+        ) from exc
     return QRIS(tlv.decode(text, offset=leading))
