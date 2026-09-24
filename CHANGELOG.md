@@ -5,9 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+## [0.2.0]
+
 ### Changed
 
 - **Renamed the package from `qris` to `qriskit`**: `pip install qriskit`, `import qriskit`, and the `qriskit` command. "QRIS" is a registered trademark of Bank Indonesia; the new name makes clear that this is an unofficial toolkit. `qris` was never published to PyPI.
+
+### Added
+
+- `qriskit.scan` and `qriskit.scan_all` read QRIS from photos and screenshots (`pip install "qriskit[scan]"`), with `qriskit.QRISScanError` reasons `no_qr`, `no_qris`, `multiple_qris`, `unreadable_image` and `image_too_large`.
+- `qriskit scan` command, which can be piped into the other commands.
+
+### Fixed
+
+- Payloads containing characters that cannot be encoded as UTF-8 now raise `QRISParseError` instead of crashing `validate()` and `is_valid()`.
 
 ## [0.1.0]
 

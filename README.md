@@ -26,6 +26,7 @@ d.dumps()  # new payload, CRC recomputed
 ```bash
 pip install qriskit           # core, no dependencies
 pip install "qriskit[image]"  # + PNG/SVG rendering (segno)
+pip install "qriskit[scan]"   # + read QRIS from photos and screenshots (zxing-cpp, Pillow)
 ```
 
 ## What it does
@@ -36,9 +37,10 @@ pip install "qriskit[image]"  # + PNG/SVG rendering (segno)
 - **Convert** static to dynamic (amount, tip or convenience fee, reference number) and back.
 - **Build** payloads from scratch for tests and demos.
 - **Identify the acquirer** from the NNS code, using Bank Indonesia's public list.
+- **Scan** photos and screenshots to get the QRIS inside (optional extra).
 - **Render** PNG/SVG QR codes (optional extra).
 - **Anonymize** payloads so they can be shared in bug reports.
-- A small **CLI**: `qriskit decode | validate | dynamic | static | image | anonymize`.
+- A small **CLI**: `qriskit scan | decode | validate | dynamic | static | image | anonymize`.
 
 ## Usage
 
@@ -123,9 +125,25 @@ png_bytes = image.to_png(q)
 
 ASPI requires QR codes of at least 115×115 px; smaller PNGs emit a `qriskit.QRISWarning`.
 
+### Scan images
+
+```python
+q = qriskit.scan("sticker.jpg")  # path, bytes, file object or PIL image
+q = qriskit.scan(upload.file)    # e.g. a FastAPI/Django upload
+for r in qriskit.scan_all("poster.png"): # every QR code, QRIS or not
+    print(r.is_qris, r.text, r.position)
+```
+
+`scan()` ignores QR codes that are not QRIS and raises `qriskit.QRISScanError` with a `reason`
+(`no_qr`, `no_qris`, `multiple_qris`, `unreadable_image`, `image_too_large`) when it cannot return exactly one QRIS.
+PNG, JPEG, WEBP, BMP and GIF are supported; iPhone HEIC photos work once `pillow-heif` is installed.
+Images are processed locally and never uploaded.
+
 ### Command line
 
 ```bash
+qriskit scan sticker.jpg  # print the QRIS inside an image
+qriskit scan sticker.jpg | qriskit decode -
 qriskit decode "0002010102..."
 qriskit validate - < payload.txt  # exit code 1 when there are errors
 qriskit dynamic "0002010102..." --amount 25000 --fee 1000 --reference INV-1
@@ -135,7 +153,7 @@ qriskit anonymize "0002010102..."  # safe to paste into an issue
 
 ## FAQ
 
-**How do I get the payload text?** Scan the QRIS image with any plain QR reader (Google Lens, `zbarimg`) and copy the text. Do not use a banking app; it pays instead of showing the text.
+**How do I get the payload text?** Install `qriskit[scan]` and use `qriskit.scan(image)` or `qriskit scan image.jpg`. Any plain QR reader (Google Lens, `zbarimg`) works too. Do not use a banking app; it pays instead of showing the text.
 
 **Can a QRIS expire after N minutes?** No. Expiry is not part of the QRIS specification; it is handled by your backend or payment gateway.
 
