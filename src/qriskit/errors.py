@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 Severity = Literal["error", "warning"]
+ScanReason = Literal["no_qr", "no_qris", "multiple_qris", "unreadable_image", "image_too_large"]
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,14 @@ class QRISValidationError(QRISError, ValueError):
         self.issues = tuple(issues)
         shown = [i for i in self.issues if i.severity == "error"] or list(self.issues)
         super().__init__("; ".join(f"{i.code}: {i.message}" for i in shown))
+
+
+class QRISScanError(QRISError, ValueError):
+    """An image could not be turned into exactly one QRIS. ``reason`` says why."""
+
+    def __init__(self, reason: ScanReason, message: str) -> None:
+        self.reason: ScanReason = reason
+        super().__init__(message)
 
 
 class QRISWarning(UserWarning):

@@ -11,7 +11,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
 authors = [{ name = "The qriskit contributors" }]
-keywords = ["qris", "qr code", "payment", "indonesia", "emvco", "qr payment"]
+keywords = ["qris", "qr code", "payment", "indonesia", "emvco", "qr payment", "qr scanner"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -31,6 +31,11 @@ dependencies = []
 
 [project.optional-dependencies]
 image = ["segno>=1.5"]
+scan = [
+    "zxing-cpp>=2.2,<3; python_version < '3.10'",
+    "zxing-cpp>=2.2; python_version >= '3.10'",
+    "Pillow>=9",
+]
 dev = [
     "pytest>=7",
     "pytest-cov>=4",
@@ -38,6 +43,9 @@ dev = [
     "mypy>=1.8",
     "ruff>=0.6",
     "segno>=1.5",
+    "zxing-cpp>=2.2,<3; python_version < '3.10'",
+    "zxing-cpp>=2.2; python_version >= '3.10'",
+    "Pillow>=9",
     "build>=1",
 ]
 
@@ -73,7 +81,7 @@ strict = true
 files = ["src"]
 
 [[tool.mypy.overrides]]
-module = ["segno", "segno.*"]
+module = ["segno", "segno.*", "zxingcpp", "zxingcpp.*", "pillow_heif"]
 ignore_missing_imports = true
 
 [tool.ruff]
