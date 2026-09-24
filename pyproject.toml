@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qris"
+dynamic = ["version"]
+description = "Parse, validate, build and convert QRIS (Indonesian QR payment) payloads. Zero dependencies."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "MFaizR77" }]
+keywords = ["qris", "qr code", "payment", "indonesia", "emvco", "qr payment"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+image = ["segno>=1.5"]
+dev = [
+    "pytest>=7",
+    "pytest-cov>=4",
+    "hypothesis>=6",
+    "mypy>=1.8",
+    "ruff>=0.6",
+    "segno>=1.5",
+    "build>=1",
+]
+
+[project.scripts]
+qris = "qris.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/MFaizR77/qris-python"
+Issues = "https://github.com/MFaizR77/qris-python/issues"
+Changelog = "https://github.com/MFaizR77/qris-python/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/qris/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/qris"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["qris"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.mypy]
+strict = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["segno", "segno.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
