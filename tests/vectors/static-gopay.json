@@ -1,0 +1,15 @@
+{
+  "name": "static-gopay",
+  "description": "Static QRIS with a GoPay account, national account and terminal label.",
+  "source": "synthetic",
+  "payload": "00020101021126620014COM.GO-JEK.WWW011993600914123456789010210G1234567890303UMI51440014ID.CO.QRIS.WWW0215ID10200123456780303UMI5204581253033605802ID5911TOKO CONTOH6007JAKARTA61051011062120708KASIR-0163043ACC",
+  "expect": {
+    "point_of_initiation": "static",
+    "merchant_name": "TOKO CONTOH",
+    "nmid": "ID1020012345678",
+    "acquirer": "GoPay",
+    "terminal_label": "KASIR-01",
+    "crc": "3ACC"
+  },
+  "issues": []
+}

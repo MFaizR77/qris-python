@@ -1,0 +1,15 @@
+{
+  "name": "dynamic-fee-reference",
+  "description": "STATIC converted to dynamic with amount 25000, fixed fee 1000 and reference INV-2026-001.",
+  "source": "synthetic",
+  "payload": "00020101021226620014COM.GO-JEK.WWW011993600914123456789010210G1234567890303UMI51440014ID.CO.QRIS.WWW0215ID10200123456780303UMI520458125303360540525000550202560410005802ID5911TOKO CONTOH6007JAKARTA61051011062280512INV-2026-0010708KASIR-0163043EBC",
+  "expect": {
+    "point_of_initiation": "dynamic",
+    "amount": "25000",
+    "tip_kind": "fixed",
+    "tip_value": "1000",
+    "reference_label": "INV-2026-001",
+    "terminal_label": "KASIR-01"
+  },
+  "issues": []
+}

@@ -1,0 +1,10 @@
+{
+  "name": "non-ascii-name",
+  "description": "Merchant name with a non-ASCII character; CRC is over UTF-8 bytes.",
+  "source": "synthetic",
+  "payload": "00020101021126620014COM.GO-JEK.WWW011993600914123456789010210G1234567890303UMI51440014ID.CO.QRIS.WWW0215ID10200123456780303UMI5204581253033605802ID5909KOPI SÜSU6007JAKARTA61051011062120708KASIR-016304F554",
+  "expect": {
+    "merchant_name": "KOPI SÜSU"
+  },
+  "issues": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "no-national-no-postal",
+  "description": "Payable-looking QRIS without tag 51 and tag 61: warnings only.",
+  "source": "synthetic",
+  "payload": "00020101021126620014COM.GO-JEK.WWW011993600914123456789010210G1234567890303UMI5204581253033605802ID5911TOKO CONTOH6007JAKARTA62120708KASIR-016304E07E",
+  "expect": {
+    "nmid": null,
+    "postal_code": null
+  },
+  "issues": [
+    "national.missing",
+    "postal_code.missing"
+  ]
+}
