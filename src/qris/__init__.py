@@ -9,6 +9,7 @@ __version__ = "0.1.0"
 
 from . import acquirers
 from .acquirers import Acquirer
+from .convert import build
 from .errors import Issue, QRISError, QRISParseError, QRISValidationError, QRISWarning
 from .model import QRIS, AdditionalData, MerchantAccount, Tip
 from .tlv import Node
@@ -28,6 +29,7 @@ __all__ = [
     "Tip",
     "__version__",
     "acquirers",
+    "build",
     "is_valid",
     "parse",
     "validate",
